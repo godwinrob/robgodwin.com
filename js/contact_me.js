@@ -1,73 +1,62 @@
-$(function() {
+// Replace YOUR_FORM_ID with your Formspree form ID from https://formspree.io
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
 
-    $("#contactForm input,#contactForm textarea").jqBootstrapValidation({
-        preventSubmit: true,
-        submitError: function($form, event, errors) {
-            // additional error messages or events
-        },
-        submitSuccess: function($form, event) {
-            // Prevent spam click and default submit behaviour
-            $("#btnSubmit").attr("disabled", true);
-            event.preventDefault();
-            
-            // get values from FORM
-            var name = $("input#name").val();
-            var email = $("input#email").val();
-            var phone = $("input#phone").val();
-            var message = $("textarea#message").val();
-            var firstName = name; // For Success/Failure Message
-            // Check for white space in name for Success/Fail message
-            if (firstName.indexOf(' ') >= 0) {
-                firstName = name.split(' ').slice(0, -1).join(' ');
-            }
-            $.ajax({
-                url: "././mail/contact_me.php",
-                type: "POST",
-                data: {
-                    name: name,
-                    phone: phone,
-                    email: email,
-                    message: message
-                },
-                cache: false,
-                success: function() {
-                    // Enable button & show success message
-                    $("#btnSubmit").attr("disabled", false);
-                    $('#success').html("<div class='alert alert-success'>");
-                    $('#success > .alert-success').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
-                        .append("</button>");
-                    $('#success > .alert-success')
-                        .append("<strong>Your message has been sent. </strong>");
-                    $('#success > .alert-success')
-                        .append('</div>');
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('contactForm');
+    const successDiv = document.getElementById('success');
+    const submitBtn = document.getElementById('btnSubmit');
 
-                    //clear all fields
-                    $('#contactForm').trigger("reset");
-                },
-                error: function() {
-                    // Fail message
-                    $('#success').html("<div class='alert alert-danger'>");
-                    $('#success > .alert-danger').html("<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;")
-                        .append("</button>");
-                    $('#success > .alert-danger').append("<strong>Sorry " + firstName + ", it seems that my mail server is not responding. Please try again later!");
-                    $('#success > .alert-danger').append('</div>');
-                    //clear all fields
-                    $('#contactForm').trigger("reset");
-                },
-            });
-        },
-        filter: function() {
-            return $(this).is(":visible");
-        },
-    });
-
-    $("a[data-toggle=\"tab\"]").click(function(e) {
+    form.addEventListener('submit', async function (e) {
         e.preventDefault();
-        $(this).tab("show");
-    });
-});
 
-// When clicking on Full hide fail/success boxes
-$('#name').focus(function() {
-    $('#success').html('');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        submitBtn.disabled = true;
+        successDiv.innerHTML = '';
+
+        const data = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            message: document.getElementById('message').value,
+        };
+
+        const firstName = data.name.split(' ')[0];
+
+        try {
+            const response = await fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+                successDiv.innerHTML =
+                    '<div class="alert alert-success">' +
+                    '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
+                    '<strong>Your message has been sent.</strong>' +
+                    '</div>';
+                form.reset();
+            } else {
+                const json = await response.json();
+                const msg = json.errors ? json.errors.map(e => e.message).join(', ') : 'Unknown error.';
+                throw new Error(msg);
+            }
+        } catch (err) {
+            successDiv.innerHTML =
+                '<div class="alert alert-danger">' +
+                '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' +
+                '<strong>Sorry ' + firstName + ', it seems my mail server is not responding. Please try again later!</strong>' +
+                '</div>';
+        } finally {
+            submitBtn.disabled = false;
+        }
+    });
+
+    document.getElementById('name').addEventListener('focus', function () {
+        successDiv.innerHTML = '';
+    });
 });

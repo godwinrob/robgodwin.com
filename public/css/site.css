@@ -141,7 +141,8 @@ dialog {
   background: var(--surface); color: var(--text); box-shadow: 0 20px 60px rgb(0 0 0 / .35);
 }
 dialog::backdrop { background: rgb(10 14 16 / .6); backdrop-filter: blur(3px); }
-dialog img { width: 100%; aspect-ratio: 900 / 650; object-fit: cover; }
+dialog img { width: 100%; aspect-ratio: 900 / 650; max-height: 50dvh; object-fit: cover; }
+html:has(dialog[open]) { overflow: hidden; }
 .dialog-body { padding: 1.25rem 1.5rem 1.5rem; }
 .dialog-body h3 { margin: 0 0 .5rem; font-size: 1.5rem; letter-spacing: -.01em; }
 .dialog-body p { margin: 0 0 1.25rem; color: var(--muted); }
@@ -167,4 +168,9 @@ dialog img { width: 100%; aspect-ratio: 900 / 650; object-fit: cover; }
   .brand { font-size: 1rem; }
   .nav-links a { padding: .4rem .5rem; font-size: .9rem; }
   .footer-inner { justify-content: center; text-align: center; }
+}
+
+@media (max-width: 340px) {
+  .nav { flex-wrap: wrap; justify-content: center; gap: .1rem; padding-block: .35rem; }
+  .nav-links a { padding: .3rem .45rem; }
 }

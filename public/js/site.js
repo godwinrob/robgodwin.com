@@ -8,7 +8,9 @@ document.querySelectorAll('[data-dialog]').forEach((trigger) => {
   let pressedOnBackdrop = false;
   dialog.addEventListener('pointerdown', (e) => { pressedOnBackdrop = e.target === dialog; });
   dialog.addEventListener('click', (e) => {
-    if (pressedOnBackdrop && e.target === dialog) dialog.close();
+    const r = dialog.getBoundingClientRect();
+    const releasedOutside = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    if (pressedOnBackdrop && e.target === dialog && releasedOutside) dialog.close();
     pressedOnBackdrop = false;
   });
 });

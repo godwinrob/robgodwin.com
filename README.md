@@ -46,6 +46,14 @@ One-time setup. Do steps 1 and 2 **before** merging to `master`, otherwise the f
 
    Until the custom domain is active, the site at `godwinrob.github.io/robgodwin.com/` will look unstyled, because asset paths are root-relative. That's expected and goes away once `robgodwin.com` resolves.
 
+### Cutover checklist
+
+- **Preview first.** Before step 2, you can check the deployed site at `https://godwinrob.github.io/robgodwin.com/`, though it will look unstyled (see above). Once the custom domain is set, that URL redirects to robgodwin.com.
+- **Lower the DNS TTL** on the `@`/`www` records to about 300s a day ahead, so the switch takes effect quickly.
+- **Check CAA records.** If the domain has any CAA records, add `0 issue "letsencrypt.org"`, otherwise GitHub can't issue the HTTPS certificate.
+- **Expect a short HTTPS gap.** GitHub issues the certificate only after DNS points at it. Until then, HTTPS visitors may see a certificate warning, usually for minutes and occasionally up to an hour, so do the switch at a quiet time. Turn on **Enforce HTTPS** once it's issued.
+- **Verify the domain** to prevent takeover: GitHub profile **Settings → Pages → Add a domain**, then add the `_github-pages-challenge-godwinrob` TXT record it gives you.
+
 ### Other hosts
 
 Because the site is just the `public/` folder, it also works on Cloudflare Pages or Netlify: set the build command to none and the output directory to `public`.

@@ -88,6 +88,11 @@ h1 {
   margin: 1.75rem 0 .5rem;
 }
 .tagline { color: var(--muted); font-size: clamp(1rem, 2.5vw, 1.2rem); margin: 0; }
+.tagline .part { white-space: nowrap; }
+@media (max-width: 600px) {
+  .tagline .sep { display: none; }
+  .tagline .part { display: block; white-space: normal; }
+}
 .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: .75rem; margin-top: 2rem; }
 
 /* Buttons */

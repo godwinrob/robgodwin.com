@@ -24,7 +24,7 @@ Then open http://localhost:8000.
 
 `.github/workflows/deploy.yml` publishes `public/` to GitHub Pages on every push to `master`.
 
-One-time setup:
+One-time setup. Do steps 1 and 2 **before** merging to `master`, otherwise the first deploy fails because Pages isn't enabled yet. You can rerun it later from the Actions tab.
 
 1. **Settings → Pages → Build and deployment → Source:** choose **GitHub Actions**.
 2. **Settings → Pages → Custom domain:** `robgodwin.com`, then tick **Enforce HTTPS** once the certificate is issued.
@@ -42,7 +42,9 @@ One-time setup:
    | AAAA  | @     | 2606:50c0:8003::153   |
    | CNAME | www   | godwinrob.github.io   |
 
-   Remove any old A/CNAME records that point at the previous host.
+   Replace only the existing `@` and `www` A/AAAA/CNAME records that point at the old web host. **Leave MX, TXT (SPF/DKIM/DMARC) and any `mail.` records alone**, or email to rob@robgodwin.com will stop working.
+
+   Until the custom domain is active, the site at `godwinrob.github.io/robgodwin.com/` will look unstyled, because asset paths are root-relative. That's expected and goes away once `robgodwin.com` resolves.
 
 ### Other hosts
 
